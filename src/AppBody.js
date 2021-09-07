@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useForm } from "react-hook-form";
-
+import './AppBody.css'
 
 
 
@@ -11,9 +11,9 @@ const AppBody = () => {
     const [lista, setLista] = useState([]);
     const [alterar, setAlterar] = useState(false)
     const [data_id, setData_id] = useState(0)
-    // const [estaNoCarrinho, setEstaNoCarrinho] = useState(false)
+    //const [comprado, setComprado] = useState({ comprado: false })
 
-    const onSubmit = (data, e) => {
+    const onSubmit = (data) => {
         //adiciona novo atributo
         data.id = new Date().getTime();
         data.comprado = false
@@ -27,7 +27,7 @@ const AppBody = () => {
         localStorage.setItem("listaDeCompras", JSON.stringify([...listaDeCompras, data]));
 
         //atualizando lista
-        setLista(...lista, data)
+        setLista([...lista, data])
 
         //limpar cada campo
         setValue("produto", "");
@@ -91,10 +91,10 @@ const AppBody = () => {
 
         const listaDeCompras2 = []
 
-        //for para oegar na lista o id do carro que foi cicado para alteração lá data_id
+        //for para pegar na lista o id do carro que foi clicado para alteração lá em data_id
         for (const lista of listaDeCompras) {
             if (lista.id === data_id) {
-                data.id = data_id; //esta sendo carencentado ao data, pois ele não vem com o formulário de entrada
+                data.id = data_id; //esta sendo adicionado ao data, pois ele não vem com o formulário de entrada
                 listaDeCompras2.push(data) // os dados do form(alterados) + data.id
             } else {
                 listaDeCompras2.push(lista)
@@ -117,6 +117,54 @@ const AppBody = () => {
 
     }
 
+    const handleComprado = (e) => {
+
+        //     const novalistaDeCompras = JSON.parse(localStorage.getItem("listaDeCompras"))
+
+        //     const tr = e.target.closest("tr")
+        //     console.log(tr)
+        //    // const id = Number(tr.getAttribute("data-id"));//id selecionado
+        //     // console.log(novalistaDeCompras)
+
+
+        //     console.log("comprou")
+        // 	// novoProdutos[index].isSelected = !novoProdutos[index].isSelected;
+
+        // 	// setLista(novoProdutos);
+        console.log(e.target.value)
+        const id = +e.target.value
+        const listaDeCompras = JSON.parse(localStorage.getItem("listaDeCompras"))
+
+        let novalistaDeCompras2 =[]
+
+
+        for(const protucts of listaDeCompras){
+
+            if(protucts.comprado === false && protucts.id === id){
+                
+                
+                console.log("setado para true", protucts)
+                protucts.comprado = true
+                novalistaDeCompras2.push(protucts)
+                
+            }else if(protucts.id === id && protucts.comprado === true){
+
+                protucts.comprado = false
+                console.log("false", protucts)
+                novalistaDeCompras2.push(protucts)
+            }else{
+                novalistaDeCompras2.push(protucts)
+            }
+
+        }
+
+        localStorage.setItem("listaDeCompras", JSON.stringify(novalistaDeCompras2))
+
+
+
+
+
+    }
 
     return (
         <div className="container">
@@ -128,7 +176,7 @@ const AppBody = () => {
                     <form onSubmit={alterar ? handleSubmit(onUpdate) : handleSubmit(onSubmit)}>
                         <div className="form-group">
                             <label htmlFor="produto">Produto:</label>
-                            <input type="text" className="form-control" placeholder="Nome do produto" id="email"
+                            <input type="text" className="form-control" placeholder="Nome do produto"
                                 {...register("produto", {
                                     required: true,
                                     maxLength: 20,
@@ -139,14 +187,14 @@ const AppBody = () => {
                         </div>
                         <div className="form-group">
                             <label htmlFor="quantidade">Quantidade</label>
-                            <input type="number" className="form-control" placeholder="Quantidade" id="quantidade"
+                            <input type="number" className="form-control" placeholder="Quantidade"
                                 {...register("quantidade", {
                                     required: true,
                                 })} />
                         </div>
                         <div className="form-group">
                             <label htmlFor="preco">Preço</label>
-                            <input type="number" className="form-control" placeholder="Preço por unidade" id="preco"
+                            <input type="number" step="any" className="form-control" placeholder="Preço por unidade"
                                 {...register("preco", {
                                     required: true,
                                 })} />
@@ -156,7 +204,8 @@ const AppBody = () => {
                             <input
                                 type="submit"
                                 className={alterar ? "d-none" : "btn btn-primary"}
-                                value="Adicionar" />
+                                value="Adicionar"
+                            />
                         </div>
                         <div className="input-group-append">
                             <input
@@ -199,7 +248,7 @@ const AppBody = () => {
                                 <tr key={item.id}
                                     data-id={item.id}
                                     onClick={handleClick}>
-                                    <td>false</td>
+                                    <td> <input type="checkbox" className="form-check-input" onChange={handleComprado} name="comprado" value={item.id} /></td>
                                     <td>{item.produto}</td>
                                     <td>{item.quantidade}</td>
                                     <td>{item.preco}</td>
