@@ -10,3 +10,9 @@
   .table tr{
     text-align: center;
   }
+
+  .itemComprado {
+    text-decoration: line-through;
+    
+   
+  }

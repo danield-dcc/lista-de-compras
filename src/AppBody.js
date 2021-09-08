@@ -11,10 +11,10 @@ const AppBody = () => {
     const [lista, setLista] = useState([]);
     const [alterar, setAlterar] = useState(false)
     const [data_id, setData_id] = useState(0)
-    //const [comprado, setComprado] = useState({ comprado: false })
+    const [comprado, setComprado] = useState(false)
 
     const onSubmit = (data) => {
-        //adiciona novo atributo
+        //adiciona novo atributoS
         data.id = new Date().getTime();
         data.comprado = false
         // console.log(data)
@@ -84,6 +84,7 @@ const AppBody = () => {
         }
     }
 
+
     const onUpdate = (data) => {
 
         const listaDeCompras = JSON.parse(localStorage.getItem("listaDeCompras"))
@@ -135,24 +136,24 @@ const AppBody = () => {
         const id = +e.target.value
         const listaDeCompras = JSON.parse(localStorage.getItem("listaDeCompras"))
 
-        let novalistaDeCompras2 =[]
+        let novalistaDeCompras2 = []
 
 
-        for(const protucts of listaDeCompras){
+        for (const protucts of listaDeCompras) {
 
-            if(protucts.comprado === false && protucts.id === id){
-                
-                
+            if (protucts.comprado === false && protucts.id === id) {
+
+
                 console.log("setado para true", protucts)
                 protucts.comprado = true
                 novalistaDeCompras2.push(protucts)
-                
-            }else if(protucts.id === id && protucts.comprado === true){
+
+            } else if (protucts.id === id && protucts.comprado === true) {
 
                 protucts.comprado = false
                 console.log("false", protucts)
                 novalistaDeCompras2.push(protucts)
-            }else{
+            } else {
                 novalistaDeCompras2.push(protucts)
             }
 
@@ -162,9 +163,13 @@ const AppBody = () => {
 
 
 
-
-
+        //??????
+        setLista(novalistaDeCompras2);
+    
     }
+
+
+
 
     return (
         <div className="container">
@@ -245,11 +250,20 @@ const AppBody = () => {
                     <tbody>
                         {lista.map((item) => {
                             return (
+
                                 <tr key={item.id}
                                     data-id={item.id}
                                     onClick={handleClick}>
+
                                     <td> <input type="checkbox" className="form-check-input" onChange={handleComprado} name="comprado" value={item.id} /></td>
-                                    <td>{item.produto}</td>
+                                    
+                                    {item.comprado ? (
+                                        <td className='itemComprado'>
+                                            {item.produto}
+                                        </td>
+                                    ) : <td>
+                                        {item.produto}
+                                        </td>}
                                     <td>{item.quantidade}</td>
                                     <td>{item.preco}</td>
                                     <td>
@@ -268,3 +282,5 @@ const AppBody = () => {
 }
 
 export default AppBody
+
+//<td>{item.produto}</td>
