@@ -11,15 +11,12 @@ const AppBody = () => {
     const [lista, setLista] = useState([]);
     const [alterar, setAlterar] = useState(false)
     const [data_id, setData_id] = useState(0)
-    const [comprado, setComprado] = useState(false)
 
     const onSubmit = (data) => {
         //adiciona novo atributoS
         data.id = new Date().getTime();
         data.comprado = false
-        // console.log(data)
 
-        //salvando lista em localStorage
         const listaDeCompras = localStorage.getItem("listaDeCompras")
             ? JSON.parse(localStorage.getItem("listaDeCompras"))
             : "";
@@ -54,7 +51,6 @@ const AppBody = () => {
         const id = Number(tr.getAttribute("data-id"));
 
         if (e.target.classList.contains("fa-edit")) {
-            // console.log("alterar")
 
             //atribui a cada varieavel do form, o conteudo da linha clicada
             setValue("comprado", tr.cells[0].innerText);
@@ -66,16 +62,14 @@ const AppBody = () => {
             setData_id(id);   //qual o id que devemos alterar
 
         } else if (e.target.classList.contains("fa-minus-circle")) {
-            console.log("Excluir")
 
             //obtém o modelo da linha dobre a qual o usuario cliclou
             const produto = tr.cells[1].innerText
 
             if (window.confirm(`Confirma a exclusão do produto "${produto}"`)) {
-                //aplica um filtro para recperar todas as linha, exeto aquela que foi exluida
+
                 const novaLista = lista.filter((carro) => { return carro.id !== id });
 
-                //atualiza o localStorage
                 localStorage.setItem("listaDeCompras", JSON.stringify(novaLista))
 
                 //atualiza a tabela(refresh)
@@ -89,26 +83,22 @@ const AppBody = () => {
 
         const listaDeCompras = JSON.parse(localStorage.getItem("listaDeCompras"))
 
-
         const listaDeCompras2 = []
 
-        //for para pegar na lista o id do carro que foi clicado para alteração lá em data_id
         for (const lista of listaDeCompras) {
             if (lista.id === data_id) {
-                data.id = data_id; //esta sendo adicionado ao data, pois ele não vem com o formulário de entrada
-                listaDeCompras2.push(data) // os dados do form(alterados) + data.id
+                data.id = data_id;
+                data.comprado = lista.comprado  //adiciona tbm o comprado = false ou true
+                listaDeCompras2.push(data)
             } else {
                 listaDeCompras2.push(lista)
             }
         }
 
-        //atualiza os dados em lcalStorage
         localStorage.setItem("listaDeCompras", JSON.stringify(listaDeCompras2))
 
-        //atualiza a lista(para fazer um refresh na página)
         setLista(listaDeCompras2);
 
-        setValue("comprado", "");
         setValue("produto", "");
         setValue("quantidade", "");
         setValue("preco", "");
@@ -120,52 +110,39 @@ const AppBody = () => {
 
     const handleComprado = (e) => {
 
-        //     const novalistaDeCompras = JSON.parse(localStorage.getItem("listaDeCompras"))
-
-        //     const tr = e.target.closest("tr")
-        //     console.log(tr)
-        //    // const id = Number(tr.getAttribute("data-id"));//id selecionado
-        //     // console.log(novalistaDeCompras)
-
-
-        //     console.log("comprou")
-        // 	// novoProdutos[index].isSelected = !novoProdutos[index].isSelected;
-
-        // 	// setLista(novoProdutos);
-        console.log(e.target.value)
+        //console.log(e.target.value)
         const id = +e.target.value
         const listaDeCompras = JSON.parse(localStorage.getItem("listaDeCompras"))
+        // setComprado(comprado = !comprado)
 
         let novalistaDeCompras2 = []
 
-
         for (const protucts of listaDeCompras) {
-
             if (protucts.comprado === false && protucts.id === id) {
-
-
-                console.log("setado para true", protucts)
                 protucts.comprado = true
                 novalistaDeCompras2.push(protucts)
-
             } else if (protucts.id === id && protucts.comprado === true) {
-
                 protucts.comprado = false
-                console.log("false", protucts)
                 novalistaDeCompras2.push(protucts)
             } else {
                 novalistaDeCompras2.push(protucts)
             }
-
         }
 
         localStorage.setItem("listaDeCompras", JSON.stringify(novalistaDeCompras2))
 
-
-
-        //??????
         setLista(novalistaDeCompras2);
-    
+    }
+
+    const limparLista = () => {
+        // eslint-disable-next-line no-restricted-globals
+        const ok = confirm("Deseja limpar a lista de Produtos?")
+        if (ok === false) {
+            return
+        } else {
+            localStorage.removeItem("listaDeCompras")
+            setLista([])
+        }
     }
 
 
@@ -204,21 +181,33 @@ const AppBody = () => {
                                     required: true,
                                 })} />
                         </div>
-
-                        <div className="input-group-append">
-                            <input
-                                type="submit"
-                                className={alterar ? "d-none" : "btn btn-primary"}
-                                value="Adicionar"
-                            />
-                        </div>
-                        <div className="input-group-append">
-                            <input
-                                type="submit"
-                                className={alterar ? "btn btn-success" : "d-none"}
-                                value="Alterar"
-                            />
-                        </div>
+                        <div className="row">
+                            <div className="col-sm-2">
+                                <div className="input-group-append ">
+                                    <input
+                                        type="submit"
+                                        className={alterar ? "d-none" : "btn btn-outline-primary"}
+                                        value="Adicionar"
+                                    />
+                                </div>
+                                <div className="input-group-append">
+                                    <input
+                                        type="submit"
+                                        className={alterar ? "btn btn-outline-success" : "d-none"}
+                                        value="Alterar"
+                                    />
+                                </div>
+                            </div>
+                            <div className="col-sm-9">
+                                <div className="input-group-append ml-4">
+                                    <input
+                                        type="button"
+                                        className="btn btn-outline-danger" onClick={limparLista}
+                                        value="Limpar Lista"
+                                    />
+                                </div>
+                            </div>
+                       </div>
                     </form>
                     <div
                         className={
@@ -235,8 +224,6 @@ const AppBody = () => {
                         )}
                     </div>
                 </div>
-
-
                 <table className="table table-striped  mt-2">
                     <thead>
                         <tr>
@@ -250,20 +237,17 @@ const AppBody = () => {
                     <tbody>
                         {lista.map((item) => {
                             return (
-
                                 <tr key={item.id}
                                     data-id={item.id}
                                     onClick={handleClick}>
-
                                     <td> <input type="checkbox" className="form-check-input" onChange={handleComprado} name="comprado" value={item.id} /></td>
-                                    
                                     {item.comprado ? (
                                         <td className='itemComprado'>
                                             {item.produto}
                                         </td>
                                     ) : <td>
                                         {item.produto}
-                                        </td>}
+                                    </td>}
                                     <td>{item.quantidade}</td>
                                     <td>{item.preco}</td>
                                     <td>
@@ -273,7 +257,6 @@ const AppBody = () => {
                                 </tr>
                             );
                         })}
-
                     </tbody>
                 </table>
             </div>
@@ -282,5 +265,3 @@ const AppBody = () => {
 }
 
 export default AppBody
-
-//<td>{item.produto}</td>
